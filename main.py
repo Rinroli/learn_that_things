@@ -18,20 +18,6 @@ PHRASES = {
     "subject": ["Subject*: ", "Math?", "Subject: "]
 }
 
-HELP_MESSAGE = """The script has two modes - adding and showing
-    Note: * means necessary\n""" + \
-    colored("Adding:", "green") + \
-        """\tYou should enter:
-            \t\t<string>\t*what - concept, what should be defined
-            \t\t<string>\t*def_body - definition
-            \t\t<string>\t*subject - what subject
-            \t\t<integer>\tlecture - number of the lection
-            \tThis will add note to the base\n""" + \
-            colored("File:", "green") + \
-                """\tAdd defs from json-file, see 'example.json'.\n""" + \
-                    colored("Show:", "green") + \
-                        """\tShow random def from the base."""
-
 
 HELP_MESSAGE = """The script has two modes - adding and showing
 Note: * means necessary
