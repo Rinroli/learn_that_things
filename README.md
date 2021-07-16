@@ -15,21 +15,18 @@ usage: main.py [-h] {add_def,show_random,from_file,help}
 Note: * means necessary
 
 ```txt
-add_def:      You should enter:
-    <string>   *what - concept, what should be defined
-    <string>   *def_body - definition
-    <string>   *subject - what subject
-    <integer>  lecture - number of the lection
-        This will add note to the base
-from_file:    Add several defs from json-file, see example.json.
-show_random:  Show random def from all the base.
+add_def:        Add note to the base:
+        <string>        *what - concept, what should be defined
+        <string>        *def_body - definition
+        <string>        *subject - what subject
+        <integer>       lecture - number of the lection
+from_file       Add definitions from json-file
+        <string>        file - file with definitions, 'example.json' by default
+show_random     Show random def from the base.
+        <string>        subject - subject of random def, 'all' by default
 ```
 
 ## TODO
-
-* Flexible file selection for adding from file - already done, it remains to configure the *cli-input*
-
-* Random def from subject - already done, it remains to configure the *cli-input*
 
 * Tests
 

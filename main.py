@@ -28,9 +28,25 @@ HELP_MESSAGE = """The script has two modes - adding and showing
             \t\t<integer>\tlecture - number of the lection
             \tThis will add note to the base\n""" + \
             colored("File:", "green") + \
-                """\tAdd difs from json-file, see 'example.json'.\n""" + \
+                """\tAdd defs from json-file, see 'example.json'.\n""" + \
                     colored("Show:", "green") + \
                         """\tShow random def from the base."""
+
+
+HELP_MESSAGE = """The script has two modes - adding and showing
+Note: * means necessary
+{add_def}\tAdd note to the base:
+\t<string>\t*what - concept, what should be defined
+\t<string>\t*def_body - definition
+\t<string>\t*subject - what subject
+\t<integer>\tlecture - number of the lection
+{from_file}\tAdd defs from json-file
+\t<string>\tfile - file with definitions, 'example.json' by default
+{show_random}\tShow random def from the base.
+\t<string>\tsubject - subject of random def, 'all' by default""".format(
+    add_def=colored("add_def:", "green"),
+    from_file=colored("from_file", "green"),
+    show_random=colored("show_random", "green"))
 
 
 def add_def() -> bool:
@@ -137,7 +153,18 @@ def parse_arguments():
     parser.add_argument(
         "command",
         help="In what way",
-        choices=["add_def", "show_random", "from_file", "help"])
+        choices=["add_def", "show_random", "from_file", "help"]
+    )
+    parser.add_argument(
+        "-f",
+        "--file",
+        help="The file where to get the data from"
+    )
+    parser.add_argument(
+        "-s",
+        "--subject",
+        help="Choose the subject"
+    )
     args = parser.parse_args()
     return args
 
@@ -156,14 +183,17 @@ if __name__ == "__main__":
 
     data_base = dataAccess()
 
-    command = parse_arguments().command
+    args_parsed = parse_arguments()
+    command = args_parsed.command
 
     if command == 'add_def':
         add_def()
     elif command == "show_random":
-        cprint(random_def(), "yellow")
+        subject = args_parsed.subject if args_parsed.subject else "all"
+        cprint(random_def(subject), "yellow")
     elif command == "from_file":
-        read_from_file("example.json")
+        file_json = args_parsed.file if args_parsed.file else "example.json"
+        read_from_file(file_json)
     else:
         print(HELP_MESSAGE)
 

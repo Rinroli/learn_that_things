@@ -3,3 +3,5 @@
 *.todo
 *.log
 *.sqlite
+*.json
+!example.json

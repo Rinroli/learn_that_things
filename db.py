@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Add new definition to the base."""
+"""Provide access to DB."""
 
 from sqlite3 import connect as sql_connect
 from sqlite3 import Error as sql_error
@@ -76,7 +76,6 @@ class dataAccess:
     def nu_by_subject(self, subject: str) -> int:
         """Number of defs by subject."""
         result = self._read_info(dbc.nu_defs_by_subj.format(subject=subject))
-        print(result)
         if result:
             return len(result)
         return 0
@@ -89,6 +88,7 @@ class dataAccess:
         return ''
 
     def get_abs_def(self, nu_def: int) -> str:
+        """Get def by absolute index."""
         result = self._read_info(dbc.get_abs_def.format(id=nu_def))
         if result:
             return result[0]
@@ -106,7 +106,7 @@ class dataAccess:
         if subject == "all":
             indexes = self._read_info(dbc.get_all_id)
         else:
-            indexes = self._read_info(dbc.get_subj_id.format(subject=subject))
+            indexes = self._read_info(dbc.get_subj_id.format(subj=subject))
         if not indexes:
             self.logger.info("There are no suitable defs")
             return -1
