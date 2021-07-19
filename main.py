@@ -30,8 +30,10 @@ Note: * means necessary
 \t-f <string>\tfile - file with definitions, 'example.json' by default
 {show_random}\tShow random def from the base.
 \t-s <string>\tsubject - subject of random def, 'all' by default
-{export}\tExport definitions to latex, result in './exported'
-\t-s <string>\tsubject - subject of defs, 'all' by default""".format(
+{export}\t\tExport definitions to latex, result in './exported/'
+\t-s <string>\tsubject - subject of defs, 'all' by default
+\t-f <string>\tfile - file with definitions, 'exported.tex' by default
+\t\t\t\tWill add extension '.tex' if necessary""".format(
     add_def=colored("add_def:", "green"),
     from_file=colored("from_file", "green"),
     show_random=colored("show_random", "green"),
@@ -103,7 +105,7 @@ def add_def() -> bool:
     return True
 
 
-def read_from_file(file_name: str):
+def read_from_file(file_name: str = "example.json"):
     """Read new defs from file."""
     logger.info(f"Start reading from the file <{file_name}>")
     with open(file_name, "r") as f_def:
@@ -174,11 +176,14 @@ def parse_arguments():
     return args
 
 
-def export_latex(subject: str="all"):
+def export_latex(subject: str="all", to_exp: str="exported.tex"):
     """Export defs to latex  file."""
-    logger.info("Begin export_latex to file <exported.tex>")
+    logger.info(f"Begin export_latex to file <{to_exp}>")
+    if not to_exp.endswith(".tex"):
+        to_exp = to_exp + ".tex"
+        logger.info(f"Output file changed to <{to_exp}>")
     all_data = data_base.get_defs(subject)
-    with open("exported/exported.tex", "w") as exp_file:
+    with open("exported/" + to_exp, "w") as exp_file:
         exp_file.write(tex_preamble)
         section_subj = ""
         for one_def in all_data:
@@ -211,16 +216,18 @@ if __name__ == "__main__":
     args_parsed = parse_arguments()
     command = args_parsed.command
     subject = args_parsed.subject if args_parsed.subject else "all"
+    given_file = args_parsed.file
 
     if command == 'add_def':
         add_def()
     elif command == "show_random":
         cprint(random_def(subject), "yellow")
     elif command == "from_file":
-        file_json = args_parsed.file if args_parsed.file else "example.json"
+        file_json = given_file if given_file else "example.json"
         read_from_file(file_json)
     elif command == "export":
-        export_latex(subject)
+        file_exp = given_file if given_file else "exported.tex"
+        export_latex(subject, file_exp)
     else:
         print(HELP_MESSAGE)
 
