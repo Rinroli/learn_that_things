@@ -27,12 +27,31 @@ Note: * means necessary
 \t<string>\t*subject - what subject
 \t<integer>\tlecture - number of the lection
 {from_file}\tAdd defs from json-file
-\t<string>\tfile - file with definitions, 'example.json' by default
+\t-f <string>\tfile - file with definitions, 'example.json' by default
 {show_random}\tShow random def from the base.
-\t<string>\tsubject - subject of random def, 'all' by default""".format(
+\t-s <string>\tsubject - subject of random def, 'all' by default
+{export}\tExport definitions to latex, result in './exported'
+\t-s <string>\tsubject - subject of defs, 'all' by default""".format(
     add_def=colored("add_def:", "green"),
     from_file=colored("from_file", "green"),
-    show_random=colored("show_random", "green"))
+    show_random=colored("show_random", "green"),
+    export=colored("export", "green"))
+
+
+tex_def = """\\begin{{definition}}[\\textbf{{{what}}}, №{lecture}]
+    {def_body}
+\\end{{definition}}
+
+"""
+
+
+tex_preamble = r"""\documentclass{article}
+\usepackage[utf8x]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{my_style} 
+\pagestyle{plain}
+\begin{document}
+"""
 
 
 def add_def() -> bool:
@@ -139,7 +158,7 @@ def parse_arguments():
     parser.add_argument(
         "command",
         help="In what way",
-        choices=["add_def", "show_random", "from_file", "help"]
+        choices=["add_def", "show_random", "from_file", "export", "help"]
     )
     parser.add_argument(
         "-f",
@@ -149,10 +168,30 @@ def parse_arguments():
     parser.add_argument(
         "-s",
         "--subject",
-        help="Choose the subject"
+        help="Choose the subject if needed"
     )
     args = parser.parse_args()
     return args
+
+
+def export_latex(subject: str="all"):
+    """Export defs to latex  file."""
+    logger.info("Begin export_latex to file <exported.tex>")
+    all_data = data_base.get_defs(subject)
+    with open("exported/exported.tex", "w") as exp_file:
+        exp_file.write(tex_preamble)
+        section_subj = ""
+        for one_def in all_data:
+            what, def_body, cur_s, lecture = one_def
+            if section_subj != cur_s:
+                exp_file.write(f"\\section{{{cur_s}}}\n")
+                section_subj = cur_s
+            exp_file.write(tex_def.format(what=what,
+                                          def_body=def_body,
+                                          lecture=lecture))
+            logger.debug(f"Export <{one_def}>")
+        logger.info(f"Export all from <{subject}>")
+        exp_file.write(r"\end{document}")
 
 
 if __name__ == "__main__":
@@ -171,15 +210,17 @@ if __name__ == "__main__":
 
     args_parsed = parse_arguments()
     command = args_parsed.command
+    subject = args_parsed.subject if args_parsed.subject else "all"
 
     if command == 'add_def':
         add_def()
     elif command == "show_random":
-        subject = args_parsed.subject if args_parsed.subject else "all"
         cprint(random_def(subject), "yellow")
     elif command == "from_file":
         file_json = args_parsed.file if args_parsed.file else "example.json"
         read_from_file(file_json)
+    elif command == "export":
+        export_latex(subject)
     else:
         print(HELP_MESSAGE)
 

@@ -6,10 +6,10 @@ For **Linux** (I do not know if the program works on **Windows**. But it is quit
 
 ## **Usage**
 
-At the moment, there are three modes of operation - two for writing, one for reading (and help).
+At the moment, there are **four** modes of operation - two for writing, one for reading and export to *LaTeX* (and help).
 
 ```bash
-usage: main.py [-h] {add_def,show_random,from_file,help}
+usage: main.py [-h] [-f FILE] [-s SUBJECT] {add_def,show_random,from_file,export,help}
 ```
 
 Note: * means necessary
@@ -21,15 +21,17 @@ add_def:        Add note to the base:
         <string>        *subject - what subject
         <integer>       lecture - number of the lection
 from_file       Add definitions from json-file
-        <string>        file - file with definitions, 'example.json' by default
+        -f <string>        file - file with definitions, 'example.json' by default
 show_random     Show random def from the base.
-        <string>        subject - subject of random def, 'all' by default
+        -s <string>        subject - subject of random def, 'all' by default
+export          Export definitions to latex, result in './exported'
+        -s <string>        subject - subject of defs, 'all' by default
 ```
 
 ## TODO
 
 * Tests
 
-* **Export** to *LaTeX*, all and by subject
+***DONE*** **Export** to *LaTeX*, all and by subject
 
 * Changing and deleting existing records (now you can do this, for example, through the *sqlitebrowser*)

@@ -122,3 +122,10 @@ class dataAccess:
     def nu_defs(self) -> int:
         """Return number of defs in the db."""
         return self._read_info(dbc.nu_defs)[0][0]
+
+    def get_defs(self, subject: str = "all"):
+        """Return all defs from subject. Sorted by subject."""
+        if subject == "all":
+            return self._read_info(dbc.get_all_defs)
+        else:
+            return self._read_info(dbc.get_subj_defs.format(subject=subject))

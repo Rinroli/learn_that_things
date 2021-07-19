@@ -86,3 +86,16 @@ SELECT COUNT(*) FROM subjects;
 nu_defs = """
 SELECT COUNT(*) FROM defs;
 """
+
+get_all_defs = """
+SELECT what, def_body, subject, lecture
+FROM defs
+ORDER BY subject, lecture; 
+"""
+
+get_subj_defs = """
+SELECT what, def_body, subject, lecture
+FROM defs
+WHERE subject = '{subject}'
+ORDER BY lecture; 
+"""
