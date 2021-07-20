@@ -7,6 +7,7 @@ import logging as lg
 from random import choice, randint
 from argparse import ArgumentParser
 import json
+import os
 
 PHRASES = {
     "what": [
@@ -67,7 +68,7 @@ def add_def() -> bool:
 
     for fi in fields:
         phrase = PHRASES[fi]
-        fields_dict[fi] = input(colored(phrase[0]), "green")
+        fields_dict[fi] = input(colored(phrase[0], "green"))
         if not fields_dict[fi]:
             cprint(phrase[1], "green")
             fields_dict[fi] = input(colored(phrase[2], "green"))
@@ -172,6 +173,12 @@ def parse_arguments():
         "--subject",
         help="Choose the subject if needed"
     )
+    parser.add_argument(
+        "-d",
+        "--data",
+        default= script_path + '/db_commands.sqlite',
+        help="Choose the data-base"
+    )
     args = parser.parse_args()
     return args
 
@@ -202,7 +209,8 @@ def export_latex(subject: str="all", to_exp: str="exported.tex"):
 if __name__ == "__main__":
     logger = lg.getLogger("main")
     logger.setLevel(lg.DEBUG)
-    fh = lg.FileHandler("logs.log")
+    script_path = os.path.realpath(__file__).rpartition('/')[0]
+    fh = lg.FileHandler(script_path + "/logs.log")
     formatter = lg.Formatter(
         datefmt="%Y-%m-%d|%H:%M:%S",
         fmt='%(asctime)s: %(levelname)s - %(name)s - %(message)s')
@@ -211,12 +219,12 @@ if __name__ == "__main__":
 
     logger.info("Start session.")
 
-    data_base = dataAccess()
-
     args_parsed = parse_arguments()
     command = args_parsed.command
     subject = args_parsed.subject if args_parsed.subject else "all"
     given_file = args_parsed.file
+
+    data_base = dataAccess(args_parsed.data)
 
     if command == 'add_def':
         add_def()

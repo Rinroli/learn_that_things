@@ -19,9 +19,7 @@ class dataAccess:
         self.logger.info("Init dataAccess")
         self.con = None
         try:
-            self.con = sql_connect(
-                os.path.realpath(__file__).rpartition('/')[0] + \
-                    "/db_commands.sqlite")
+            self.con = sql_connect(path)
         except sql_error as e:
             print("Error {}".format(e))
         self._create_tables()
