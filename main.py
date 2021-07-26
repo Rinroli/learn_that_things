@@ -9,6 +9,7 @@ from argparse import ArgumentParser
 import json
 import os
 
+
 PHRASES = {
     "what": [
         "What* is it: ", "An empty concept - mm-m, too original",
@@ -109,6 +110,8 @@ def add_def() -> bool:
 def read_from_file(file_name: str = "example.json"):
     """Read new defs from file."""
     logger.info(f"Start reading from the file <{file_name}>")
+    if not file_name.endswith(".json"):
+        file_name += ".json"
     with open(file_name, "r") as f_def:
         all_data = json.load(f_def)
         for fd in all_data:
@@ -204,6 +207,7 @@ def export_latex(subject: str="all", to_exp: str="exported.tex"):
             logger.debug(f"Export <{one_def}>")
         logger.info(f"Export all from <{subject}>")
         exp_file.write(r"\end{document}")
+    print(f"Export all from <{subject}>")
 
 
 if __name__ == "__main__":

@@ -24,54 +24,52 @@ add_new_def = """
 INSERT INTO
   defs (rel_index, what, def_body, subject, lecture)
 VALUES
-  ({rel_index},
-  '{what}',
-  '{def_body}',
-  '{subject}',
-  {lecture});
+  (:rel_index,
+  :what,
+  :def_body,
+  :subject,
+  :lecture);
 """
 
 add_one_to_subject = """
 UPDATE subjects
 SET nu_defs = nu_defs + 1
-WHERE subject = '{subject}';
+WHERE subject = :subject;
 """
 
 new_subject = """
 INSERT INTO
   subjects (subject)
 VALUES
-  ('{subject}');
+  (:subject);
 """
 
 nu_defs_by_subj = """
-SELECT nu_defs
-FROM subjects
-WHERE subject = '{subject}';
+SELECT COUNT(*) FROM defs WHERE subject=:subject;
 """
 
 get_def = """
 SELECT what, def_body, lecture, id
 FROM defs
-WHERE rel_index = {rel_ind} AND subject = '{subj}';
+WHERE rel_index = :rel_ind AND subject = :subj;
 """
 
 get_abs_def = """
 SELECT what, def_body, lecture, subject, rel_index
 FROM defs
-WHERE id = {id};
+WHERE id = :id;
 """
 
 get_subj = """
 SELECT subject
 FROM subjects
-WHERE id = {id};
+WHERE id = :id;
 """
 
 get_subj_id = """
 SELECT id
 FROM defs
-WHERE subject = '{subj}';
+WHERE subject = :subj;
 """
 
 get_all_id = """
@@ -96,6 +94,6 @@ ORDER BY subject, lecture;
 get_subj_defs = """
 SELECT what, def_body, subject, lecture
 FROM defs
-WHERE subject = '{subject}'
+WHERE subject = :subject
 ORDER BY lecture; 
 """

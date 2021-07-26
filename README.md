@@ -11,7 +11,8 @@ For **Linux** (I do not know if the program works on **Windows**. But it is quit
 At the moment, there are **four** modes of operation - two for writing, one for reading and export to *LaTeX* (and help).
 
 ```bash
-usage: main.py [-h] [-f FILE] [-s SUBJECT] {add_def,show_random,from_file,export,help}
+usage: main.py [-h] [-f FILE] [-s SUBJECT] [-d DATA]
+               {add_def,show_random,from_file,export,help}
 ```
 
 Note: * means necessary

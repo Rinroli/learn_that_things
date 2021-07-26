@@ -24,16 +24,16 @@ class dataAccess:
             print("Error {}".format(e))
         self._create_tables()
 
-    def _execute_query(self, query):
+    def _execute_query(self, query, **kwargs):
         """Execute the query on SQL."""
         if __name__ == '__main__':
             cprint(query, color="blue")
 
         cursor = self.con.cursor()
-        cursor.execute(query)
+        cursor.execute(query, kwargs)
         self.con.commit()
 
-    def _read_info(self, query):
+    def _read_info(self, query, **kwargs):
         """Read info from db."""
         if __name__ == '__main__':
             cprint(query, color="green")
@@ -41,7 +41,7 @@ class dataAccess:
         cursor = self.con.cursor()
         result = None
         try:
-            cursor.execute(query)
+            cursor.execute(query, kwargs)
             result = cursor.fetchall()
             return result
         except sql_error as e:
@@ -56,45 +56,47 @@ class dataAccess:
     def add_def(self, what: str, def_body: str, subject: str, lecture: int):
         """Create new def with given fields."""
         try:
-            self._execute_query(dbc.new_subject.format(subject=subject))
+            self._execute_query(dbc.new_subject, subject=subject)
             self.logger.info(f"New subject <{subject}>")
         except Exception as e:
             self.logger.debug(f"Already exists <{subject}>")
 
         rel_index = self.nu_by_subject(subject) + 1
         self._execute_query(
-            dbc.add_new_def.format(what=what,
-                                   def_body=def_body,
-                                   subject=subject,
-                                   lecture=lecture,
-                                   rel_index=rel_index))
-        self._execute_query(dbc.add_one_to_subject.format(subject=subject))
+            dbc.add_new_def,
+            what=what,
+            def_body=def_body,
+            subject=subject,
+            lecture=lecture,
+            rel_index=rel_index
+        )
+        self._execute_query(dbc.add_one_to_subject, subject=subject)
         self.logger.info(f"Add new def, relative index #{rel_index}")
 
     def nu_by_subject(self, subject: str) -> int:
         """Number of defs by subject."""
-        result = self._read_info(dbc.nu_defs_by_subj.format(subject=subject))
+        result = self._read_info(dbc.nu_defs_by_subj, subject=subject)
         if result:
-            return len(result)
+            return result[0][0]
         return 0
 
     def get_def(self, nu_def: int, subj: str) -> str:
         """Get def by number (relative) and subject."""
-        result = self._read_info(dbc.get_def.format(rel_ind=nu_def, subj=subj))
+        result = self._read_info(dbc.get_def, rel_ind=nu_def, subj=subj)
         if result:
             return result[0]
         return ''
 
     def get_abs_def(self, nu_def: int) -> str:
         """Get def by absolute index."""
-        result = self._read_info(dbc.get_abs_def.format(id=nu_def))
+        result = self._read_info(dbc.get_abs_def, id=nu_def)
         if result:
             return result[0]
         return ''
 
     def get_subj(self, subj_nu: int):
         """Get subject by number."""
-        result = self._read_info(dbc.get_subj.format(id=subj_nu))
+        result = self._read_info(dbc.get_subj, id=subj_nu)
         if result:
             return result[0][0]
         return ''
@@ -104,7 +106,7 @@ class dataAccess:
         if subject == "all":
             indexes = self._read_info(dbc.get_all_id)
         else:
-            indexes = self._read_info(dbc.get_subj_id.format(subj=subject))
+            indexes = self._read_info(dbc.get_subj_id, subj=subject)
         if not indexes:
             self.logger.info("There are no suitable defs")
             return -1
@@ -126,4 +128,4 @@ class dataAccess:
         if subject == "all":
             return self._read_info(dbc.get_all_defs)
         else:
-            return self._read_info(dbc.get_subj_defs.format(subject=subject))
+            return self._read_info(dbc.get_subj_defs,subject=subject)
