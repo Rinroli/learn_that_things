@@ -1,0 +1,109 @@
+\ProvidesPackage{my_style}
+\usepackage{cmap}
+\usepackage[utf8x]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage{mathtools}
+\usepackage{cancel}
+\usepackage{enumerate}
+% \usepackage{enumitem}
+
+\usepackage{listings}
+
+\usepackage{hyperref}
+\usepackage{color}
+
+\usepackage{graphicx, xcolor}
+\usepackage{import}
+
+\usepackage{tikz}
+\usetikzlibrary{decorations}
+\usetikzlibrary{patterns}
+\usetikzlibrary{calc}
+
+\usepackage{wrapfig}
+\usepackage{cutwin}
+\usepackage{picinpar}
+\usepackage{floatflt}
+
+\usepackage{multirow}
+
+\hypersetup{colorlinks=true, linkcolor=blue}
+
+\frenchspacing
+\pagestyle{plain}
+
+\newtheorem{theorem}{Теорема}[section]
+\newtheorem*{theorem*}{Теорема}
+
+\newtheorem{statement}{Утверждение}[section]
+\newtheorem{axiom}{Аксиомы}[section]
+
+\newtheorem{problem}{Задача}
+
+\newtheorem{exercise}{Упражнение}
+
+\newtheorem{lemma}{Лемма}[section]
+
+\newtheorem{assumption}{Предположение}[section]
+
+\newtheorem{corollary}{Следствие}[theorem]
+
+\theoremstyle{definition}
+\newtheorem{definition}{Определение}[section]
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Замечание}
+
+\theoremstyle{remark}
+\newtheorem*{digression}{Отступление}
+
+\theoremstyle{remark}
+\newtheorem*{method}{Метод}
+
+\theoremstyle{remark}
+\newtheorem*{answer}{Ответ}
+
+\theoremstyle{remark}
+\newtheorem*{solution}{Решение}
+
+\theoremstyle{definition}
+\newtheorem{ex}{Пример}[section]
+
+\renewcommand\qedsymbol{\textit{q.e.d.}}
+
+\def\dd#1#2{\frac{\partial#1}{\partial#2}}
+\def\R{\mathbb{R}}
+\def\sR{\subset\mathbb{R}}
+\newcommand{\dtwo}[3]{\frac{\partial^2#1}{\partial#2\partial#3}}
+\newcommand{\ddf}[1]{\frac{\partial f}{\partial#1}}
+\newcommand{\fd}[3]{#1\colon #2 \rightarrow #3}
+\newcommand{\du}{F(x, y, y', \ldots, y^{(n)})}
+\newcommand{\abr}{(a, b) \subset \mathbb{R}}
+\newcommand{\imp}{\Rightarrow}
+\newcommand{\equ}{\Leftrightarrow}
+\newcommand{\eqmat}{\leftrightarrow}
+\newcommand{\impdef}{\overset{def}{\equ}}
+\newcommand{\rint}{\int \!\!}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Co}{\mathbb{C}}
+\newcommand{\Ker}{Ker\: \phi}
+\newcommand{\Imh}{Im\: \phi}
+\newcommand{\frc}[2]{\raisebox{2pt}{$#1$}\!\big/\!\raisebox{-3pt}{$#2$}}
+\newcommand{\divis}{\mathop{\raisebox{-2pt}{\vdots}}}
+
+% \renewcommand{\int}{\int \!\!}
+\renewcommand{\phi}{\varphi}
+\renewcommand{\epsilon}{\varepsilon}
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\geq}{\geqslant}
+\newcommand{\setm}{\!\setminus\!}
+% \renewcommand{\labelenumii}{\arabic{enumi}.\arabic{enumii}.}
+
+\pagestyle{headings}
+\renewcommand{\@oddhead}{\hfil \mbox{Лекция } \thesection}
+
+% \AddEnumerateCounter{\Asbuk}{\@Asbuk}{\CYRM}
+% \AddEnumerateCounter{\asbuk}{\@asbuk}{\cyrm}
