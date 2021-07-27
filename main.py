@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
-"""Operate with db - add defs and read them."""
+"""Operate with db - add defs and read them.
+
+version 1.0
+"""
 
 from db import dataAccess
 from termcolor import cprint, colored
 import logging as lg
 from random import choice, randint
 from argparse import ArgumentParser
+from pylatexenc.latexwalker import LatexWalker, LatexEnvironmentNode
+import latex_output
 import json
 import os
 
@@ -23,13 +28,18 @@ PHRASES = {
 
 HELP_MESSAGE = """The script has two modes - adding and showing
 Note: * means necessary
-{add_def}\tAdd note to the base:
+All default files are in './examples'
+{add_def}\tAdd note to the base. Will ask:
 \t<string>\t*what - concept, what should be defined
 \t<string>\t*def_body - definition
 \t<string>\t*subject - what subject
 \t<integer>\tlecture - number of the lection
 {from_file}\tAdd defs from json-file
 \t-f <string>\tfile - file with definitions, 'example.json' by default
+{latex}\t\Import definitions from latex
+\t-s <string>\tsubject - subject of defs, 'Жизнь' by default
+\t-f <string>\tfile - file with definitions, 'example_latex.tex' by default
+\t\t\t\tWill add extension '.tex' if necessary
 {show_random}\tShow random def from the base.
 \t-s <string>\tsubject - subject of random def, 'all' by default
 {export}\t\tExport definitions to latex, result in './exported/'
@@ -38,6 +48,7 @@ Note: * means necessary
 \t\t\t\tWill add extension '.tex' if necessary""".format(
     add_def=colored("add_def:", "green"),
     from_file=colored("from_file", "green"),
+    latex=colored("latex", "green"),
     show_random=colored("show_random", "green"),
     export=colored("export", "green"))
 
@@ -132,6 +143,47 @@ def read_from_file(file_name: str = "example.json"):
                    color="green")
 
 
+def read_from_latex(file_name: str = "example.tex", subject: str = "all"):
+    """Read defs from latex file."""
+    logger.info(f"Start parsing latex file <file_name>")
+    if subject == "all":
+        subject = "Жизнь"
+    if not file_name.endswith(".tex"):
+        file_name += ".tex"
+        logger.info(f"Output file changed to <{file_name}>")
+
+    with open(file_name, "r") as f_in:
+        read_data = f_in.read()
+        parsed = LatexWalker(read_data)
+        nodelist, _, _ = parsed.get_latex_nodes(pos=0)
+        main_nodes = nodelist[11].nodelist
+        logger.debug("Parsed latex file")
+        for m_node in main_nodes:
+            if m_node.isNodeType(LatexEnvironmentNode) and \
+                    m_node.environmentname == "definition":
+                what, b, e, lecture = _proccess_one_latex_def(m_node)
+                def_body = "\n".join(
+                    map(lambda x: x.strip(),
+                        read_data[b:e].split(sep="\n")[1:-1]))
+                data_base.add_def(what, def_body, subject, lecture)
+
+                cprint(f"All done! New definition of '{what}' has been saved",
+                       color="green")
+                logger.info(f"Read def <{what}>")
+                logger.debug(f"Get def_body=<{def_body}>")
+                logger.debug(f"Get subject=<{subject}>")
+                logger.debug(f"Get lecture=<{lecture}>")
+
+
+def _proccess_one_latex_def(env_node: LatexEnvironmentNode):
+    """Proccess one def from latex, add to db."""
+    what = env_node.nodeargd.argnlist[0].nodelist[0]
+    what = what.nodeargd.argnlist[0].nodelist[0].chars
+    lecture = int(env_node.nodeargd.argnlist[0].nodelist[1].chars[3:])
+    def_begin, def_len = env_node.pos, env_node.len
+    return what, def_begin, def_begin + def_len, lecture
+
+
 def random_subject() -> str:
     """Choose random subject."""
     logger.info("Choose random subject")
@@ -147,43 +199,17 @@ def random_def(subject: str = 'all'):
     logger.info(f"Let's choose random def from <{subject}>")
     nu_def = data_base.get_random_def_id(subject)
     logger.debug(f"<{nu_def}> was picked")
+
+    res = data_base.get_abs_def(nu_def)
     if subject == 'all':
-        res = data_base.get_abs_def(nu_def)
         subject = res[3]
-    else:
-        res = data_base.get_def(nu_def, subject)
+
     logger.info(f"Get <{res}>")
 
-    return f"{res[1]}\n\t{res[0].capitalize()}, курс \"{subject}\"" + (
+    de = latex_output.custom_latex_to_text(res[1])
+
+    return f"{de}\n\t{res[0].capitalize()}, курс \"{subject}\"" + (
         f"#{res[2]}" if res[2] != -1 else '')
-
-
-def parse_arguments():
-    """Parse arguments from terminal."""
-    parser = ArgumentParser()
-    parser.add_argument(
-        "command",
-        help="In what way",
-        choices=["add_def", "show_random", "from_file", "export", "help"]
-    )
-    parser.add_argument(
-        "-f",
-        "--file",
-        help="The file where to get the data from"
-    )
-    parser.add_argument(
-        "-s",
-        "--subject",
-        help="Choose the subject if needed"
-    )
-    parser.add_argument(
-        "-d",
-        "--data",
-        default= script_path + '/db_commands.sqlite',
-        help="Choose the data-base"
-    )
-    args = parser.parse_args()
-    return args
 
 
 def export_latex(subject: str="all", to_exp: str="exported.tex"):
@@ -208,6 +234,27 @@ def export_latex(subject: str="all", to_exp: str="exported.tex"):
         logger.info(f"Export all from <{subject}>")
         exp_file.write(r"\end{document}")
     print(f"Export all from <{subject}>")
+
+
+def parse_arguments():
+    """Parse arguments from terminal."""
+    parser = ArgumentParser()
+    parser.add_argument("command",
+                        help="In what way",
+                        choices=[
+                            "add_def", "show_random", "from_file", "export",
+                            "latex", "help"
+                        ])
+    parser.add_argument("-f",
+                        "--file",
+                        help="The file where to get the data from")
+    parser.add_argument("-s", "--subject", help="Choose the subject if needed")
+    parser.add_argument("-d",
+                        "--data",
+                        default=script_path + '/db_commands.sqlite',
+                        help="Choose the data-base")
+    args = parser.parse_args()
+    return args
 
 
 if __name__ == "__main__":
@@ -235,11 +282,14 @@ if __name__ == "__main__":
     elif command == "show_random":
         cprint(random_def(subject), "yellow")
     elif command == "from_file":
-        file_json = given_file if given_file else "example.json"
+        file_json = given_file if given_file else "examples/example.json"
         read_from_file(file_json)
     elif command == "export":
         file_exp = given_file if given_file else "exported.tex"
         export_latex(subject, file_exp)
+    elif command == "latex":
+        file_latex = given_file if given_file else "examples/example_latex.tex"
+        read_from_latex(file_latex, subject)
     else:
         print(HELP_MESSAGE)
 

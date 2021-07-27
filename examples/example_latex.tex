@@ -1,0 +1,41 @@
+\documentclass{article}
+\usepackage[utf8x]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{my_style} 
+\pagestyle{plain}
+\begin{document}
+\section{Дифгем}
+\begin{definition}[\textbf{Тензорное поле}, №1]
+    \emph{Тензорным полем} типа $(p, q)$ и ранга $p+q$ называется объект, который задается в каждой регулярной системе координат $(x)$ набором функций, обозначенных $T_{j_1 \ldots j_q}^{i_1 \ldots i_p}$, со свойством, что при замене координат $(x)\to (x')$ эти функции преобразуются по следующему закону
+    $$\underbrace{T_{j'_1 \ldots j'_q}^{i'_1 \ldots i'_p}}_{(x')} = \dd{x^{i'_1}}{x^{i_1}} \cdots \dd{x^{i'_p}}{x^{i_p}} \cdot \dd{x^{j_1}}{x^{j'_1}} \cdots \dd{x^{j_q}}{x^{j'_q}} \cdot \underbrace{T_{j_1 \ldots j_q}^{i_1 \ldots i_p}}_{(x)}$$
+    Или в сокращенной записи:
+    $$T_{J'}^{I'} = \dd{x^{I'}}{x^I} \cdot \dd{x^J}{x^{J'}} \cdot T_J^I$$
+\end{definition}
+
+
+\begin{theorem}
+    Сумма тензорных полей одного типа есть тензорное поле того же типа.
+\end{theorem}
+
+
+\begin{definition}[\textbf{Опускание индекса}, №2]
+    Возьмем тензорное поле произвольного вида $T_{j_1 \ldots j_q}^{i_1 \ldots i_p}$
+    и невырожденное тензорное поле $g_{ij}(x)$ типа $(0,2)$. Тогда операция
+    $$g_{\alpha i_1} \cdot T_{j_1 \ldots j_q}^{i_1 \ldots i_p} = P_{\alpha j_1 \ldots j_q}^{i_2 \ldots i_p}$$
+    называется \emph{опусканием индекса}.
+
+    В результате тип тензора преобразуется следующим образом:
+    $$(p,q) \to (p-1, q+1)$$
+\end{definition}
+
+\begin{definition}[\textbf{Поднятие индекса}, №2]
+    Возьмем тензорное поле произвольного вида $T_{j_1 \ldots j_q}^{i_1 \ldots i_p}$ и невырожденное тензорное поле $g_{ij}(x)$ типа $(2,0)$. Тогда операция
+    $$g^{\alpha j_1} \cdot T_{j_1 \ldots j_q}^{i_1 \ldots i_p} = Q_{j_2 \ldots j_q}^{\alpha i_1 \ldots i_p}$$
+    называется \emph{поднятием индекса}.
+
+    В результате тип тензора преобразуется следующим образом:
+    $$(p,q) \to (p+1, q-1)$$
+\end{definition}
+
+
+\end{document}

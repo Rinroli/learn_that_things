@@ -112,7 +112,7 @@ class dataAccess:
             return -1
 
         picked = choice(indexes)[0]
-        self.logger.info(f"Pick def#{picked} from <{subject}>")
+        self.logger.info(f"Pick def #{picked} from <{subject}>")
         return picked
 
     def nu_subjects(self) -> int:
