@@ -7,7 +7,6 @@ from termcolor import cprint
 from random import choice
 
 import logging as lg
-import os
 
 import db_commands as dbc
 
@@ -128,4 +127,9 @@ class dataAccess:
         if subject == "all":
             return self._read_info(dbc.get_all_defs)
         else:
-            return self._read_info(dbc.get_subj_defs,subject=subject)
+            return self._read_info(dbc.get_subj_defs, subject=subject)
+    
+    def search_name(self, what: str):
+        """Search def in data base."""
+        self.logger.debug(f"Inner inner search for {what}")
+        return self._read_info(dbc.search_name, what=what)

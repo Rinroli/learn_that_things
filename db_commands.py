@@ -55,7 +55,7 @@ WHERE rel_index = :rel_ind AND subject = :subj;
 """
 
 get_abs_def = """
-SELECT what, def_body, lecture, subject, rel_index
+SELECT what, def_body, subject, lecture, rel_index
 FROM defs
 WHERE id = :id;
 """
@@ -96,4 +96,10 @@ SELECT what, def_body, subject, lecture
 FROM defs
 WHERE subject = :subject
 ORDER BY lecture; 
+"""
+
+search_name = """
+SELECT what, def_body, subject, lecture
+FROM defs
+WHERE what = :what;
 """

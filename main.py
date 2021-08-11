@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Operate with db - add defs and read them.
 
-version 1.0
+version 1.1
 """
 
 from db import dataAccess
 from termcolor import cprint, colored
 import logging as lg
 from random import choice, randint
-from argparse import ArgumentParser
+from argparse import ArgumentParser, ONE_OR_MORE
 from pylatexenc.latexwalker import LatexWalker, LatexEnvironmentNode
 import latex_output
 import json
@@ -45,12 +45,16 @@ All default files are in './examples'
 {export}\t\tExport definitions to latex, result in './exported/'
 \t-s <string>\tsubject - subject of defs, 'all' by default
 \t-f <string>\tfile - file with definitions, 'exported.tex' by default
-\t\t\t\tWill add extension '.tex' if necessary""".format(
+\t\t\t\tWill add extension '.tex' if necessary
+{search}\tSimple definition search by object.
+\t-w <string>\tobject - object for search""".format(
     add_def=colored("add_def:", "green"),
     from_file=colored("from_file", "green"),
     latex=colored("latex", "green"),
     show_random=colored("show_random", "green"),
-    export=colored("export", "green"))
+    export=colored("export", "green"),
+    search=colored("search", "green")
+)
 
 
 tex_def = """\\begin{{definition}}[\\textbf{{{what}}}, №{lecture}]
@@ -195,21 +199,27 @@ def random_subject() -> str:
 
 
 def random_def(subject: str = 'all'):
-    """Choose random def from subject. ''=all"""
+    """Choose random def from subject. default = all"""
     logger.info(f"Let's choose random def from <{subject}>")
     nu_def = data_base.get_random_def_id(subject)
     logger.debug(f"<{nu_def}> was picked")
 
     res = data_base.get_abs_def(nu_def)
     if subject == 'all':
-        subject = res[3]
+        subject = res[2]
 
     logger.info(f"Get <{res}>")
 
-    de = latex_output.custom_latex_to_text(res[1])
+    cprint(format_def(res, subject), "yellow")
 
-    return f"{de}\n\t{res[0].capitalize()}, курс \"{subject}\"" + (
-        f"#{res[2]}" if res[2] != -1 else '')
+
+def format_def(def_data, subject: str):
+    """Print formatted def."""
+    logger.debug(f"Print <{def_data[2]}>")
+    de = latex_output.custom_latex_to_text(def_data[1])
+
+    return f"{de}\n\t{def_data[0].capitalize()}, курс \"{subject}\"" + (
+        f"#{def_data[3]}" if def_data[3] != -1 else '')
 
 
 def export_latex(subject: str="all", to_exp: str="exported.tex"):
@@ -236,6 +246,15 @@ def export_latex(subject: str="all", to_exp: str="exported.tex"):
     print(f"Export all from <{subject}>")
 
 
+def search_def(what: str):
+    """Search for definition with object <what>."""
+    logger.info(f"Search for <{what}>")
+    result = data_base.search_name(what)
+    logger.debug(f"Inner search - {len(result)} found")
+
+    return [format_def(one_r, one_r[2]) for one_r in result]
+
+
 def parse_arguments():
     """Parse arguments from terminal."""
     parser = ArgumentParser()
@@ -243,12 +262,15 @@ def parse_arguments():
                         help="In what way",
                         choices=[
                             "add_def", "show_random", "from_file", "export",
-                            "latex", "help"
+                            "latex", "search", "help"
                         ])
     parser.add_argument("-f",
                         "--file",
                         help="The file where to get the data from")
     parser.add_argument("-s", "--subject", help="Choose the subject if needed")
+    parser.add_argument("-w",
+                        "--what",
+                        help="Some text (need for some commands? for example 'what')")
     parser.add_argument("-d",
                         "--data",
                         default=script_path + '/db_commands.sqlite',
@@ -274,13 +296,14 @@ if __name__ == "__main__":
     command = args_parsed.command
     subject = args_parsed.subject if args_parsed.subject else "all"
     given_file = args_parsed.file
+    what = args_parsed.what
 
     data_base = dataAccess(args_parsed.data)
 
     if command == 'add_def':
         add_def()
     elif command == "show_random":
-        cprint(random_def(subject), "yellow")
+        random_def(subject)
     elif command == "from_file":
         file_json = given_file if given_file else "examples/example.json"
         read_from_file(file_json)
@@ -290,6 +313,11 @@ if __name__ == "__main__":
     elif command == "latex":
         file_latex = given_file if given_file else "examples/example_latex.tex"
         read_from_latex(file_latex, subject)
+    elif command == "search":
+        res_search = search_def(what)
+        logger.info(f"Found {len(res_search)} defs for <{what}>")
+        for res in res_search:
+            cprint(res, "yellow", end="\n\n")
     else:
         print(HELP_MESSAGE)
 

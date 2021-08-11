@@ -7,3 +7,9 @@
 *.sqlite
 *.json
 !example.json
+*.gz
+*.pdf
+*.out
+*.fls
+*.aux
+*.fdb_latexmk

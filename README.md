@@ -11,8 +11,8 @@ For **Linux** (I do not know if the program works on **Windows**. But it is quit
 ### Command scheme
 
 ```bash
-usage: main.py [-h] [-f FILE] [-s SUBJECT] [-d DATA]
-               {add_def,show_random,from_file,latex,export,help}
+usage: main.py [-h] [-f FILE] [-s SUBJECT] [-w WHAT] [-d DATA]
+               {add_def,show_random,from_file,latex,export,search,help}
 ```
 
 Note: * means necessary
@@ -24,6 +24,8 @@ There are three possible argument (except *command* and *help*):
 * **-f** file path, relative or absolute
 
 * **-s** subject name
+
+* **-w** object name
 
 * **-d** data-base path, default 'db_commands.sqlite'
 
@@ -81,6 +83,14 @@ Export definitions to latex, result in './exported'
                                 Will add extension '.tex' if necessary
 ```
 
+* **search**
+
+Simple search definitions by object name
+
+```txt
+-w <string>     object - object for search
+```
+
 ## **Thanks**
 
 Thanks [phfaist](https://github.com/phfaist/pylatexenc) for awesome python lib `pylatexenc`!
@@ -95,6 +105,6 @@ Thanks [phfaist](https://github.com/phfaist/pylatexenc) for awesome python lib `
 
 * Changing and deleting existing records (now you can do this, for example, through the *sqlitebrowser*)
 
-* Searching by name and tags
+* Searching by name (*DONE*) and tags
 
 * References
